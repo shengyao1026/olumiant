@@ -9,9 +9,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
         }
         body {
             background: black;
@@ -23,34 +20,17 @@
         }
         .video-container {
             position: relative;
-            /* You can adjust these padding values as needed */
-            padding: 0px; /* All sides equal */
-            /* Or use individual paddings:
-            padding-top: 20px;
-            padding-right: 40px;
-            padding-bottom: 20px;
-            padding-left: 40px;
-            */
-            /* Or shorthand:
-            padding: 20px 40px 20px 40px; (top right bottom left)
-            */
             width: 100vw;
             height: 100vh;
         }
         video {
             position: absolute;
-            /* Adjust these values to account for padding */
-            top: 0px;    /* Same as padding-top */
-            left: 0px;   /* Same as padding-left */
-            right: 0px;  /* Same as padding-right */
-            bottom: 0px; /* Same as padding-bottom */
-            /* Remove width/height 100% since we're using absolute positioning with spacing */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             cursor: pointer;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
         }
         #mainVideo {
             opacity: 0;
@@ -68,16 +48,30 @@
     </div>
 
     <script>
+        // Get video elements
         const idleVideo = document.getElementById('idleVideo');
         const mainVideo = document.getElementById('mainVideo');
+        
+        // Log when elements are found
+        console.log('Idle video element:', idleVideo);
+        console.log('Main video element:', mainVideo);
 
+        // Simple click handler on both videos
         idleVideo.addEventListener('click', playMainVideo);
         mainVideo.addEventListener('click', playMainVideo);
 
+        // Function to handle video switch
         function playMainVideo() {
+            console.log('Click detected');
+            
+            // Show main video
             mainVideo.style.opacity = '1';
+            
+            // Try to play main video
             mainVideo.play()
                 .then(() => {
+                    console.log('Main video playing');
+                    // Hide idle video
                     idleVideo.style.opacity = '0';
                     idleVideo.pause();
                 })
@@ -86,9 +80,17 @@
                 });
         }
 
+        // Additional event listeners for debugging
+        mainVideo.addEventListener('play', () => console.log('Main video play event fired'));
+        mainVideo.addEventListener('playing', () => console.log('Main video playing event fired'));
         mainVideo.addEventListener('ended', () => {
+            console.log('Main video ended');
             mainVideo.pause();
         });
+
+        // Check if videos are loaded
+        idleVideo.addEventListener('loadeddata', () => console.log('Idle video loaded'));
+        mainVideo.addEventListener('loadeddata', () => console.log('Main video loaded'));
     </script>
 </body>
 </html>
