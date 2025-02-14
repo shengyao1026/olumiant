@@ -31,20 +31,14 @@
             height: 100%;
             object-fit: cover;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            tap-highlight-color: transparent;
         }
         #mainVideo {
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-        #idleVideo {
-            transition: opacity 0.3s ease-in-out;
         }
     </style>
 </head>
 <body>
-    <div class="video-container" id="videoContainer">
+    <div class="video-container">
         <video id="idleVideo" autoplay loop muted playsinline>
             <source src="idle.mp4" type="video/mp4">
         </video>
@@ -54,55 +48,49 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const videoContainer = document.getElementById("videoContainer");
-            const idleVideo = document.getElementById("idleVideo");
-            const mainVideo = document.getElementById("mainVideo");
+        // Get video elements
+        const idleVideo = document.getElementById('idleVideo');
+        const mainVideo = document.getElementById('mainVideo');
+        
+        // Log when elements are found
+        console.log('Idle video element:', idleVideo);
+        console.log('Main video element:', mainVideo);
+
+        // Simple click handler on both videos
+        idleVideo.addEventListener('click', playMainVideo);
+        mainVideo.addEventListener('click', playMainVideo);
+
+        // Function to handle video switch
+        function playMainVideo() {
+            console.log('Click detected');
             
-            // Force play idle video
-            idleVideo.play().catch(function(error) {
-                console.log("Autoplay failed:", error);
-            });
+            // Show main video
+            mainVideo.style.opacity = '1';
+            
+            // Try to play main video
+            mainVideo.play()
+                .then(() => {
+                    console.log('Main video playing');
+                    // Hide idle video
+                    idleVideo.style.opacity = '0';
+                    idleVideo.pause();
+                })
+                .catch(error => {
+                    console.error('Error playing main video:', error);
+                });
+        }
 
-            // Add click handler to the container instead of just the video
-            videoContainer.addEventListener("click", async function() {
-                try {
-                    // Reset main video to beginning
-                    mainVideo.currentTime = 0;
-                    
-                    // Start playing main video
-                    const playPromise = await mainVideo.play();
-                    
-                    if (playPromise !== undefined) {
-                        // Fade videos
-                        idleVideo.style.opacity = "0";
-                        mainVideo.style.opacity = "1";
-                        
-                        // Stop idle video after transition
-                        setTimeout(() => {
-                            idleVideo.pause();
-                            idleVideo.style.display = "none";
-                        }, 300);
-                    }
-                } catch (error) {
-                    console.error("Error playing main video:", error);
-                }
-            });
-
-            // Handle main video end
-            mainVideo.addEventListener("ended", () => {
-                mainVideo.pause();
-            });
-
-            // Debug logging
-            mainVideo.addEventListener('play', () => {
-                console.log('Main video started playing');
-            });
-
-            mainVideo.addEventListener('error', (e) => {
-                console.error('Main video error:', e);
-            });
+        // Additional event listeners for debugging
+        mainVideo.addEventListener('play', () => console.log('Main video play event fired'));
+        mainVideo.addEventListener('playing', () => console.log('Main video playing event fired'));
+        mainVideo.addEventListener('ended', () => {
+            console.log('Main video ended');
+            mainVideo.pause();
         });
+
+        // Check if videos are loaded
+        idleVideo.addEventListener('loadeddata', () => console.log('Idle video loaded'));
+        mainVideo.addEventListener('loadeddata', () => console.log('Main video loaded'));
     </script>
 </body>
 </html>
