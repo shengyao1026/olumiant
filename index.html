@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Video</title>
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
             background: black;
             display: flex;
             justify-content: center;
@@ -14,7 +18,13 @@
             height: 100vh;
             overflow: hidden;
         }
+        .video-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
         video {
+            position: absolute;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -24,39 +34,39 @@
             transition: opacity 0.3s ease-in-out; /* Smooth fade transition */
         }
         #mainVideo {
-            position: absolute;
             opacity: 0; /* Hide until tapped */
-            pointer-events: none; /* Prevent accidental taps */
         }
     </style>
 </head>
 <body>
-    <!-- Idle Looping Video -->
-    <video id="idleVideo" autoplay loop playsinline>
-        <source src="idle.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <div class="video-container">
+        <!-- Idle Video -->
+        <video id="idleVideo" autoplay loop muted playsinline>
+            <source src="idle.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
 
-    <!-- Preloaded Main Video (Hidden) -->
-    <video id="mainVideo" playsinline>
-        <source src="main.mp4" type="video/mp4">
-    </video>
+        <!-- Main Video (Preloaded, Hidden) -->
+        <video id="mainVideo" playsinline>
+            <source src="main.mp4" type="video/mp4">
+        </video>
+    </div>
 
     <script>
         const idleVideo = document.getElementById("idleVideo");
         const mainVideo = document.getElementById("mainVideo");
 
-        // Preload `main.mp4` (prevents black screen)
+        // Preload `main.mp4`
         mainVideo.load();
 
         idleVideo.addEventListener("click", () => {
             idleVideo.style.opacity = 0; // Fade out idle video
             mainVideo.style.opacity = 1; // Fade in main video
-            mainVideo.style.pointerEvents = "auto"; // Enable interaction
             idleVideo.pause(); // Stop idle video
+
             setTimeout(() => {
                 idleVideo.style.display = "none"; // Hide idle video fully
-                mainVideo.play(); // Play main video immediately
+                mainVideo.play(); // Play main video
             }, 300); // Matches transition time
 
             mainVideo.addEventListener("ended", () => {
