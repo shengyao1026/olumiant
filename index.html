@@ -25,52 +25,66 @@
         }
         video {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+            -webkit-tap-highlight-color: transparent;
             tap-highlight-color: transparent;
-            transition: opacity 0.3s ease-in-out; /* Smooth fade transition */
         }
         #mainVideo {
-            opacity: 0; /* Hide until tapped */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #idleVideo {
+            transition: opacity 0.3s ease-in-out;
         }
     </style>
 </head>
 <body>
     <div class="video-container">
-        <!-- Idle Video -->
         <video id="idleVideo" autoplay loop muted playsinline>
             <source src="idle.mp4" type="video/mp4">
-            Your browser does not support the video tag.
         </video>
-
-        <!-- Main Video (Preloaded, Hidden) -->
-        <video id="mainVideo" playsinline>
+        <video id="mainVideo" muted playsinline>
             <source src="main.mp4" type="video/mp4">
         </video>
     </div>
-
     <script>
-        const idleVideo = document.getElementById("idleVideo");
-        const mainVideo = document.getElementById("mainVideo");
+        document.addEventListener('DOMContentLoaded', function() {
+            const idleVideo = document.getElementById("idleVideo");
+            const mainVideo = document.getElementById("mainVideo");
+            
+            // Force play idle video on mobile
+            idleVideo.play().catch(function(error) {
+                console.log("Autoplay failed:", error);
+            });
 
-        // Preload `main.mp4`
-        mainVideo.load();
+            // Preload main video
+            mainVideo.load();
 
-        idleVideo.addEventListener("click", () => {
-            idleVideo.style.opacity = 0; // Fade out idle video
-            mainVideo.style.opacity = 1; // Fade in main video
-            idleVideo.pause(); // Stop idle video
+            // Handle click/tap event
+            idleVideo.addEventListener("click", () => {
+                idleVideo.style.opacity = "0";
+                mainVideo.style.opacity = "1";
+                
+                // Ensure main video is ready to play
+                mainVideo.play().then(() => {
+                    // Only hide idle video after main video starts playing
+                    setTimeout(() => {
+                        idleVideo.pause();
+                        idleVideo.style.display = "none";
+                    }, 300);
+                }).catch(function(error) {
+                    console.log("Main video playback failed:", error);
+                });
+            });
 
-            setTimeout(() => {
-                idleVideo.style.display = "none"; // Hide idle video fully
-                mainVideo.play(); // Play main video
-            }, 300); // Matches transition time
-
+            // Stop at last frame
             mainVideo.addEventListener("ended", () => {
-                mainVideo.pause(); // Stop at last frame
+                mainVideo.pause();
             });
         });
     </script>
