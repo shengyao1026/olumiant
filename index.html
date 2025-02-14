@@ -19,6 +19,8 @@
             height: 100%;
             object-fit: cover;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* Fix for mobile tap flash */
+            tap-highlight-color: transparent;
         }
     </style>
 </head>
@@ -32,11 +34,12 @@
         const video = document.getElementById("video");
 
         video.addEventListener("click", () => {
+            video.pause();
             video.src = "main.mp4";
-            video.loop = false;  // Stop looping
+            video.load();
+            video.loop = false;
             video.play();
 
-            // Pause at the last frame
             video.addEventListener("ended", () => {
                 video.pause();
             });
