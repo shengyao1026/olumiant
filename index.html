@@ -19,29 +19,41 @@
             height: 100%;
             object-fit: cover;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent; /* Fix for mobile tap flash */
+            -webkit-tap-highlight-color: transparent; /* Fix tap highlight */
             tap-highlight-color: transparent;
+            transition: opacity 0.3s ease-in-out; /* Smooth transition */
         }
     </style>
 </head>
 <body>
-    <video id="video" autoplay loop playsinline>
+    <!-- Idle Video -->
+    <video id="idleVideo" autoplay loop playsinline>
         <source src="idle.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
+    <!-- Preloaded Main Video (Hidden) -->
+    <video id="mainVideo" style="position: absolute; opacity: 0;" playsinline>
+        <source src="main.mp4" type="video/mp4">
+    </video>
+
     <script>
-        const video = document.getElementById("video");
+        const idleVideo = document.getElementById("idleVideo");
+        const mainVideo = document.getElementById("mainVideo");
 
-        video.addEventListener("click", () => {
-            video.pause();
-            video.src = "main.mp4";
-            video.load();
-            video.loop = false;
-            video.play();
+        // Preload the main video in the background
+        mainVideo.load();
 
-            video.addEventListener("ended", () => {
-                video.pause();
+        idleVideo.addEventListener("click", () => {
+            idleVideo.style.opacity = 0; // Fade out idle video
+            setTimeout(() => {
+                idleVideo.style.display = "none"; // Hide idle video after fade out
+                mainVideo.style.opacity = 1; // Fade in main video
+                mainVideo.play();
+            }, 300); // Match the transition time (0.3s)
+
+            mainVideo.addEventListener("ended", () => {
+                mainVideo.pause(); // Stop at last frame
             });
         });
     </script>
